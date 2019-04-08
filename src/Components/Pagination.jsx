@@ -2,18 +2,23 @@ import React from 'react';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 export default class Example extends React.Component {
+  constructor(props){
+    super(props)
+  }
+
+  handleClick = () =>{
+    this.props.next(this.props.newArray, this.props.currentPage, this.props.perPage)
+  }
  
   render() {
     return (
       <Pagination size="sm" aria-label="Page navigation example">
-      <PaginationItem>
-          <PaginationLink first href="#" />
+      
+        <PaginationItem>
+          <PaginationLink  onClick={this.props.previous} previous href="#" />
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink previous href="#" />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">
+          <PaginationLink  href="#">
             1
           </PaginationLink>
         </PaginationItem>
@@ -28,12 +33,9 @@ export default class Example extends React.Component {
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink next href="#" />
-        </PaginationItem>
-        <PaginationItem >
-          <PaginationLink/>
+          <PaginationLink onClick={this.handleClick}next href="#" />
         </PaginationItem>
       </Pagination>
-    );
+    )
   }
 }

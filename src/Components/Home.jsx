@@ -15,7 +15,7 @@ export default class Home extends React.Component {
       lastName: "",
       email: "",
       profiles: [],
-      totalCount: null,
+      totalCount: 5,
       totalPages: null,
       currentPage:0,
       allProfiles:[]
@@ -85,7 +85,6 @@ export default class Home extends React.Component {
   }
 
   paginationSuccess = results => {
-    console.log(results);
     this.setState({allProfiles:results.data.item.pagedItems})
     console.log(this.state.allProfiles)
 
@@ -94,10 +93,6 @@ export default class Home extends React.Component {
   paginationError = error => {
     console.log(error);
   };
-
-  pagination = () =>{
-    this.getPagination(this.state.currentPage)
-  }
 
   allUserError = error => {
     console.log(error);
@@ -119,7 +114,24 @@ export default class Home extends React.Component {
     });
   }
 
+  next = (newArray,currentPage,perPage) =>{
+    if(this.state.currentPage<= this.state.totalCount){
+    this.setState({currentPage:this.state.currentPage +1 }) 
+    }
+    const array = []
+    console.log(newArray.slice(currentPage,6))
+  }
+
+  previous = () =>{
+    if (this.state.currentPage > 0){
+    this.setState({currentPage:this.state.currentPage -1 })
+    }
+    return this.state.currentPage
+  }
+
   render() {
+    const currentPage = this.state.currentPage
+    const totalCount = this.state.totalCount
     const people = this.state.profiles.map(profile => {
       return (
         <PeopleCard
@@ -141,7 +153,8 @@ export default class Home extends React.Component {
           {" "}
           Welcome {this.state.firstName} {this.state.lastName}{" "}
           <div>
-            <Pagination pagination={this.pagination} />
+            <Pagination pagination={this.pagination} next={this.next} newArray={this.state.allProfiles} currentPage={this.state.currentPage} perPage={this.state.totalCount}previous={this.previous}/>
+            {currentPage <=totalCount?currentPage: `End Of Record`} 
           </div>
         </h5>
         {people}
