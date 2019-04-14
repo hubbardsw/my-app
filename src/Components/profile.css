@@ -1,0 +1,35 @@
+.profile{
+   
+        border: 1px solid gray;
+        border-radius: 20px;
+        margin-top:20px;
+        margin-bottom:10px;
+        margin-left:10px;
+        width:300px;
+        height:700px;
+
+}
+
+.profile-form{
+   
+        border: 1px solid gray;
+        border-radius: 20px;
+        margin-top:20px;
+        margin-bottom:10px;
+        margin-left:10px;
+        padding-top:40px;
+        padding-left:50px;
+        width:500px;
+        height:700px;       
+}
+.image{
+        border-radius:40px;
+        width:100px;
+        height:100px;
+        margin-top:30px;
+        align-self: center;
+      }
+
+      .test{
+        display: inline-block  
+      }

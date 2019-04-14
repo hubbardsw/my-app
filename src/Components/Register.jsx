@@ -1,6 +1,6 @@
 import React from "react";
 import "./Register.css";
-import * as userService from "../services/userServices";
+import * as userService from "../services/userServices"
 import { Link} from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

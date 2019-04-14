@@ -1,30 +1,49 @@
 import React from "react";
-import { Button, Card, CardBody, CardTitle, CardFooter } from "reactstrap";
-import './peopleCard.css'
+import { Button, Card, CardBody, CardTitle } from "reactstrap";
+import "./peopleCard.css";
 
 const PeopleCard = props => {
-
-  const checkImageType = (props) =>{
-    if (!(props).endsWith(('.png', '.jpg', '.jpeg'))){
-    return props
-    }else{
-      props = "/blank-profile-pic.png"
+  const checkImageType = props => {
+    if (props.endsWith(("g"))) {
+      return props;
+    } else {
+     return "https://www.freeiconspng.com/uploads/no-image-icon-0.png";
+    
     }
-  }
+  };
 
+  const editProfile = () => {
+    console.log(props.people.id);
+    props.getProfileById(props.people.id);
+  };
 
   return (
-   <div>
-      <Card className="col-md-3 card float-left card-extra" >
+    <div className="PeopleCard">
+      <Card className="col-md-3 card float-left card-extra">
         <CardTitle />
         <CardBody>
-          <div className="profile-img mx-auto"><img alt="" src={checkImageType(props.image)} width="100px" height="100px"></img></div>
-          <p>name:{props.name}</p>
-         <p>slug:{props.slug}</p> 
+          <div className="profile-img mx-auto">
+            <img
+              alt=""
+              src={checkImageType(props.image)}
+              width="100px"
+              height="100px"
+            />
+          </div>
+          <p>name:{props.people.title}</p>
+          <p>slug:{props.people.slug}</p>
         </CardBody>
         <div>
-        <Button color="success" className="float-left profile-button">Edit</Button>
-        <Button color="danger" className="float-right profile-button">Delete</Button>
+          <Button
+            onClick={editProfile}
+            color="success"
+            className="float-left profile-button"
+          >
+            Edit
+          </Button>
+          <Button color="danger" className="float-right profile-button">
+            Delete
+          </Button>
         </div>
       </Card>
     </div>

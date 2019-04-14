@@ -1,9 +1,11 @@
 import React from "react";
 import * as userService from "../services/userServices";
+import * as peopleService from "../services/peopleService"
 import PeopleCard from "./PeopleCard";
 import Pagination from "./Pagination";
-import NavBar from './NavBar'
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import NavBar from "./NavBar";
+import ProfileDisplay from "./Profile";
+import AlertResults from "./Alert";
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -15,15 +17,23 @@ export default class Home extends React.Component {
       lastName: "",
       email: "",
       profiles: [],
-      totalCount: 5,
       totalPages: null,
-      currentPage:0,
-      allProfiles:[]
+      pageSize: 6,
+      currentPage: 0,
+      hasNext: true,
+      hasPrevious: false,
+      pageIndex: null,
+      showProfile: false,
+      person: [],
+      isUpdated: false,
+      searchTerm: "",
+      alert: false,
+      showCounter:false
     };
   }
 
   componentDidMount() {
-    this.currentUser();
+    this.currentUser()
   }
 
   currentUser = () => {
@@ -34,8 +44,8 @@ export default class Home extends React.Component {
   };
 
   currentUserSuccess = res => {
-    console.log(res.data.item.actualUserId);
-    this.setState({ id: res.data.item.actualUserId });
+    console.log(res.item.actualUserId);
+    this.setState({ id: res.item.actualUserId });
     this.currentUserId(this.state.id);
   };
 
@@ -49,45 +59,30 @@ export default class Home extends React.Component {
   };
 
   currentUserIdSuccess = res => {
-    console.log(res);
     this.setState({
-      firstName: res.data.item.firstName,
-      lastName: res.data.item.lastName,
-      email: res.data.item.email
+      firstName: res.item.firstName,
+      lastName: res.item.lastName,
+      email: res.item.email
     });
   };
-
   currentUserIdError = error => console.log(error);
 
-  allUsers = () => {
-    userService
-      .allUsers()
-      .then(this.allUsersSuccess)
-      //.then(this.getPagination(this.state.totalCount))
-      .catch(this.allUsersError);
+  getPagination = (pageNumber, pageSize) => {
+    peopleService
+      .getPagination(this.state.currentPage, this.state.pageSize)
+      .then(this.onPaginationSuccess)
+      .catch(this.paginationError);
   };
 
-  allUsersSuccess = results => {
-    console.log(results.data)
+  onPaginationSuccess = res => {
     this.setState({
-      profiles: results.data.item.pagedItems,
-      totalCount: results.data.item.totalCount,
-      totalPages: results.data.item.totalPages
+     profiles: res.item.pagedItems,
+     totalPages: res.item.totalPages,
+     hasNext: res.item.hasNextPage,
+     hasPrevious: res.item.hasPreviousPage,
+     pageIndex: res.item.pageIndex,
+     showCounter:true
     });
-    this.getPagination(this.state.totalCount)
-  };
-
-  getPagination = totalCount => {
-   userService
-   .getPagination(totalCount)
-   .then(this.paginationSuccess)
-   .catch(this.paginationError)
-  }
-
-  paginationSuccess = results => {
-    this.setState({allProfiles:results.data.item.pagedItems})
-    console.log(this.state.allProfiles)
-
   };
 
   paginationError = error => {
@@ -114,50 +109,148 @@ export default class Home extends React.Component {
     });
   }
 
-  next = (newArray,currentPage,perPage) =>{
-    if(this.state.currentPage<= this.state.totalCount){
-    this.setState({currentPage:this.state.currentPage +1 }) 
+  next = (pageNumber, pageSize) => {
+    if (this.state.hasNext) {
+      this.setState({ currentPage: this.state.currentPage + 1 }, () =>
+        this.getPagination(this.state.currentPage, this.pageSize)
+      );
     }
-    const array = []
-    console.log(newArray.slice(currentPage,6))
-  }
+  };
 
-  previous = () =>{
-    if (this.state.currentPage > 0){
-    this.setState({currentPage:this.state.currentPage -1 })
+  previous = () => {
+    if (this.state.hasPrevious) {
+      this.setState({ currentPage: this.state.currentPage - 1 }, () =>
+        this.getPagination(this.state.currentPage, this.pageSize)
+      );
     }
-    return this.state.currentPage
-  }
+    return this.state.currentPage;
+  };
+
+  getProfileById = id => {
+    //userService
+    peopleService
+      .getProfileById(id)
+      .then(this.getProfileByIdSuccess)
+      .catch(this.getProfileByIdError);
+  };
+  getProfileByIdSuccess = item => {
+    const items = item.item;
+    let profile = { ...items };
+    let primaryImage = { ...profile.primaryImage };
+    profile.primaryImage = primaryImage;
+
+    this.setState((prevState, props) => {
+      return {
+        person: profile,
+        showProfile: true
+      };
+    });
+  };
+
+  updateProfileById = (id, payload) => {
+    //userService
+    peopleService
+      .updateProfileById(id, payload)
+      .then(this.updateProfileSuccess)
+      .catch(this.updateProfileError);
+  };
+
+  updateProfileSuccess = results => {
+    this.getPagination(this.state.currentPage, this.state.pageSize);
+    this.setState({ showProfile: false });
+  };
+
+  updateProfileError = error => {
+    console.log(error);
+  };
+
+  getProfileByIdError = results => console.log(results);
+
+  submitUpdateForm = value => {
+    var skill = value.skills.split(",");
+    value.skills = skill;
+    this.updateProfileById(value.id, value);
+  };
+
+  searchByInput = (search, onSuccess, onError) => {
+    peopleService
+      .searchByInput(this.state.searchTerm)
+      .then(this.searchByInputSuccess)
+      .catch(this.searchByInputError);
+  };
+
+  searchByInputSuccess = res => {
+    this.setState({ profiles: res.item.pagedItems });
+    console.log(res.item.pagedItems);
+  };
+  searchByInputError = error => {
+    this.setState({ profiles:[], alert: true });
+  };
+  handleSearchChange = search => {
+    this.setState({ searchTerm: search });
+  };
+
+  onAlertDismiss = () => {
+    this.setState({ alert: false });
+  };
+
+  mapPeopleCard = (profile) =>(
+    <PeopleCard
+    key={profile.id}
+    image={
+      !(profile.primaryImage === null)
+        ? profile.primaryImage.imageUrl
+        : ''
+    }
+
+    people={profile}
+    getProfileById={this.getProfileById}
+  />
+  )
+
+    //Rendering For Page/////
 
   render() {
-    const currentPage = this.state.currentPage
-    const totalCount = this.state.totalCount
-    const people = this.state.profiles.map(profile => {
+    const currentPage = this.state.currentPage;
+    if (this.state.showProfile) {
       return (
-        <PeopleCard
-          key={profile.id}
-          name={profile.bio}
-          slug={profile.slug}
-          image={
-            !(profile.primaryImage === null)
-              ? profile.primaryImage.imageUrl
-              :''
-          }
+        
+        <ProfileDisplay
+          person={this.state.person}
+          update={this.updateProfileById}
+          submitUpdateForm={this.submitUpdateForm}
         />
       );
-    });
+    } else {
+      var pageCounter = <div>{this.state.hasNext ? `Page ${currentPage + 1} of ${this.state.totalPages}` : `End Of Record` }</div>
+      var peopleList = this.state.profiles.map(this.mapPeopleCard);
+    }
     return (
       <div>
-       <NavBar  logoutUser = {this.logoutUser} email={this.state.email} allUsers={this.allUsers} pagination={this.pagination} />
+        <NavBar
+          logoutUser={this.logoutUser}
+          email={this.state.email}
+          getPagination={this.getPagination}
+          handleSearchChange={this.handleSearchChange}
+          search={this.state.searchTerm}
+          searchByTerms={this.searchByInput}
+        />
+        <div className=" col-md-3 center-text">
+          <Pagination
+            pagination={this.pagination}
+            next={this.next}
+            currentPage={this.state.currentPage}
+            pageSize={this.state.pageSize}
+            previous={this.previous}
+          />
+        </div>
         <h5>
           {" "}
           Welcome {this.state.firstName} {this.state.lastName}{" "}
-          <div>
-            <Pagination pagination={this.pagination} next={this.next} newArray={this.state.allProfiles} currentPage={this.state.currentPage} perPage={this.state.totalCount}previous={this.previous}/>
-            {currentPage <=totalCount?currentPage: `End Of Record`} 
-          </div>
+          {(this.state.showCounter)?pageCounter:''}
         </h5>
-        {people}
+        {peopleList}
+        <AlertResults alert={this.state.alert} onDismiss={this.onAlertDismiss} />
       </div>
     );
   }

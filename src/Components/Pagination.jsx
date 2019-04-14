@@ -3,11 +3,11 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 export default class Example extends React.Component {
   constructor(props){
-    super(props)
+    super()
   }
 
   handleClick = () =>{
-    this.props.next(this.props.newArray, this.props.currentPage, this.props.perPage)
+    this.props.next(this.props.currentPage, this.props.pageSize)
   }
  
   render() {

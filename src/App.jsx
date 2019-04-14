@@ -3,9 +3,10 @@ import './App.css';
 import Login from './Components/test'
 import RegistrationForm from './Components/Register.jsx'
 import Home from './Components/Home'
-import { Route, BrowserRouter as Router } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenSquare } from '@fortawesome/free-solid-svg-icons'
+import Blog from './Components/Blog'
 library.add(faPenSquare)
 class App extends Component {
   render() {
@@ -13,10 +14,13 @@ class App extends Component {
       <Router>
       <div className="App">
         <h1>Welcome to Sabio React</h1>
-        <Route path='/login' component={Login} />
+        <Switch>
+        <Route exact path='/' component={Login} />
         <Route path ='/registration'component={RegistrationForm} />
         <Route path='/home' component={Home} />
-      </div>
+        <Route path = '/blog' component={Blog} /> 
+        </Switch>
+        </div>
     </Router>
     );
   }

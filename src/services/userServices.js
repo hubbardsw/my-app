@@ -1,6 +1,7 @@
 import axios from "axios";
+import * as globalHelper from "../services/serviceHelper";
 
-let logInUser = (payload, onSuccess, onError) => {
+const logInUser = payload => {
 
     const config = {
         method: "POST",
@@ -14,12 +15,12 @@ let logInUser = (payload, onSuccess, onError) => {
     };
 
     return axios(config)
-        .then(onSuccess)
-        .catch(onError);
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError);
 };
 
 
-let registerUser = (payload, onSuccess, onError) => {
+const registerUser = payload => {
 
     const config = {
         method: "POST",
@@ -33,13 +34,11 @@ let registerUser = (payload, onSuccess, onError) => {
     };
 
     return axios(config)
-        .then(onSuccess)
-        .catch(onError)
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError)
 };
 
-
-
-let currentUser = (onSuccess, onError) => {
+const currentUser = () => {
 
     const config = {
         method: "GET",
@@ -52,11 +51,11 @@ let currentUser = (onSuccess, onError) => {
     };
 
     return axios(config)
-        .then(onSuccess)
-        .catch(onError)
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError)
 };
 
-let currentUserId = (id, onSuccess, onError) => {
+const currentUserId = id => {
     const config = {
         method: "GET",
         url: `http://sabiobootcampapi.azurewebsites.net/api/users/${id}`,
@@ -68,12 +67,12 @@ let currentUserId = (id, onSuccess, onError) => {
     };
 
     return axios(config)
-        .then(onSuccess)
-        .catch(onError)
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError)
 
 };
 
-let logoutUser = (onSuccess, onError) => {
+const logoutUser = () => {
 
     const config = {
         method: "GET",
@@ -86,11 +85,11 @@ let logoutUser = (onSuccess, onError) => {
     };
 
     return axios(config)
-        .then(onSuccess)
-        .catch(onError)
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError)
 };
 
-let allUsers = (onSuccess, onError) => {
+const allUsers = () => {
 
     const config = {
         method: "GET",
@@ -103,25 +102,8 @@ let allUsers = (onSuccess, onError) => {
     };
 
     return axios(config)
-        .then(onSuccess)
-        .catch(onError)
-};
-
-let getPagination = (totalCount,onSuccess, onError) => {
-
-    const config = {
-        method: "GET",
-        url: `http://sabiobootcampapi.azurewebsites.net/api/people/0/${totalCount}`,
-        withCredentials: true,
-        crossdomain: true,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    };
-
-    return axios(config)
-        .then(onSuccess)
-        .catch(onError)
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError)
 };
 
 export {
@@ -131,7 +113,7 @@ export {
     currentUserId,
     logoutUser,
     allUsers,
-    getPagination
+   
 }; // export all your calls here
 
 // if you had three functions to export 

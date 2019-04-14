@@ -1,5 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import {Form, Input, Button, Col, FormGroup, Row} from 'reactstrap'
+
 
 import {
     Navbar,
@@ -14,14 +16,28 @@ import {
   } from "reactstrap";
 
 export default class NavBar extends React.Component{
+  constructor(props){
+super()
+  }
+
+  searchByInput = () =>{
+    this.props.searchByTerms()
+  }
+
+  handleChange = (e)=>{
+  this.props.handleSearchChange(e.target.value)
+  }
+
     render(){
+  const search = this.props.search
+  console.log(search)
         return (
 
 <Navbar color="light" light expand="md">
           <NavbarBrand href="/">Swagger Api {this.props.email}</NavbarBrand>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink>Blogs</NavLink>
+                <NavLink onClick={this.redirectToBlog}>Blogs</NavLink>
               </NavItem>
 
               <NavItem>
@@ -31,7 +47,7 @@ export default class NavBar extends React.Component{
                 <NavLink>Tech Companies</NavLink>
               </NavItem>
 
-              <NavItem onClick={this.props.allUsers}>
+              <NavItem onClick={<Redirect to="/blog" />}>
                 <NavLink>Get Profiles</NavLink>
               </NavItem>
 
@@ -55,7 +71,19 @@ export default class NavBar extends React.Component{
                 </NavLink>
               </NavItem>
             </Nav>
+            <Form>
+            <FormGroup>
+                <Row style={{padding:"0 0 0 15px"}}>
+                    <Col md={6}>
+            <Input type="text" value={search} onChange={this.handleChange} />
+            </Col>
+            <Col md={2}>
+            <Button onClick={this.searchByInput}>Search</Button>
+            </Col>
+            </Row>
+            </FormGroup>
+        </Form>
         </Navbar>
         )
     }
-}
+  }

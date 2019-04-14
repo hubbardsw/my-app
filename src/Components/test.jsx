@@ -70,7 +70,6 @@ export default class Login extends React.Component {
             toggle={this.toggle}
           />
         </div>
-        //<ModalComponent initialModalState={true} loggedInState={true} toHomeState={true} />
       );
     }
 

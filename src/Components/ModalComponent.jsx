@@ -1,8 +1,8 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { faCheckCircle} from "@fortawesome/free-solid-svg-icons";
+import {Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 export default class ModalComponent extends React.Component {
   constructor(props) {
@@ -21,9 +21,9 @@ export default class ModalComponent extends React.Component {
     }));
   };
 
-  showButton = () => {
-    this.setState({ showButton: false });
-  };
+  //showButton = () => {
+  //  this.setState({ showButton: false });
+  //};
 
   redirectUser = () => {
     this.toggle();
@@ -32,7 +32,7 @@ export default class ModalComponent extends React.Component {
   render() {
     let toLogin = this.state.toLogin;
     let welcome = `${this.state.loggedIn ? `logged in` : `registered`}`;
-    const { showButton } = this.state;
+    //const { showButton } = this.state;
 
     console.log(toLogin);
     if (this.state.toLogin) {
@@ -40,10 +40,7 @@ export default class ModalComponent extends React.Component {
     }
     return (
       <div>
-        <Button color="danger" onClick={this.toggle}>
-          {this.props.buttonLabel}Test Modal
-        </Button>
-        <Modal
+                <Modal
           isOpen={this.state.modal}
           toggle={this.toggle}
           className={this.props.className}
