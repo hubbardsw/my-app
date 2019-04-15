@@ -37,7 +37,7 @@ super()
           <NavbarBrand href="/">Swagger Api {this.props.email}</NavbarBrand>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink onClick={this.redirectToBlog}>Blogs</NavLink>
+                <NavLink href={'/blog'}>Blogs</NavLink>
               </NavItem>
 
               <NavItem>

@@ -1,0 +1,35 @@
+.blog-large-img {
+    border-radius: 40px;
+    width: 400px;
+    height: 400px;
+}
+
+.card-border{
+    box-shadow:  2px 2px 2px 2px #888888; 
+}
+
+.blog-med-img{
+    border-radius: 10px;
+    width: 440px;
+    height: 250px;
+}
+
+.box {
+    width:70%;
+    height:200px;
+    background:#FFF;
+    margin:40px auto;
+}
+
+.card-med{
+    margin-top:10px
+}
+
+.blogs-card-image{
+    border:1px solid #888888;
+    box-shadow: 2px -1px 2px #888888;
+    border-radius:10px;
+    width: 440px;
+    height: 250px;
+    margin-bottom:5px;
+}
