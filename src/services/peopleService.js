@@ -49,7 +49,7 @@ const updateProfileById = (id, payload) =>{
     };
  
     return axios(config)
-        .then(globalHelper.onGlobalSuccess)
+        .then((res)=>{ return {res,payload} })
         .catch(globalHelper.onGlobalError)
  }
 

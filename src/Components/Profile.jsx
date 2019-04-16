@@ -7,13 +7,12 @@ import ModalResponsive from './Modal'
 
 const ProfileDisplay = props => {
 
-    const updateProfile = () => {
-        props.update(props.person.id, props.person)
-    }
+  //  const updateProfile = () => {
+   //     props.update(props.person.id, props.person)
+   // }
 
     const submitForm = (values) =>{
       let value = {id:props.person.id,...values};
-      console.log(value)
       props.submitUpdateForm(value)
     
     }
@@ -28,7 +27,7 @@ const ProfileDisplay = props => {
         <Row>
           <Col xs="5" className="profile">
             <div className="center-text image mx-auto">
-              <img alt="/" src={props.person.primaryImage.imageUrl} />
+              <img alt="/" src={props.person.primaryImage.imageUrl || props.person.primaryImage} />
             </div>
             <p>Headline:{props.person.headline}</p>
             <br />
@@ -50,7 +49,7 @@ const ProfileDisplay = props => {
                 slug:props.person.slug,
                 statusId:props.person.statusId,
                 skills: skill,
-                primaryImage: props.person.primaryImage.imageUrl
+                primaryImage: props.person.primaryImage.imageUrl || props.person.primaryImage
               }}
               onSubmit={(values, { setSubmitting }) => {
                 submitForm(values);
@@ -123,7 +122,7 @@ const ProfileDisplay = props => {
                 <FormGroup row>
                   <Col md={8}>
                   <div className="center-text image mx-auto">
-              <img alt="/" src={props.person.primaryImage.imageUrl} />
+              <img alt="/" src={props.person.primaryImage.imageUrl || props.person.primaryImage} />
               <Button color="primary" type="submit" >Update</Button>
             </div>
                   </Col>

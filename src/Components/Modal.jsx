@@ -7,8 +7,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 export default class ModalResponsive extends React.Component {
   constructor(props) {
-    super(props);
-    console.log(this.props);
+    super();
   }
   showButton = () => {
     this.setState({ showButton: false });
