@@ -1,8 +1,6 @@
 import React from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import {Form, Input, Button, Col, FormGroup, Row} from 'reactstrap'
-
-
 import {
     Navbar,
     NavbarBrand,
@@ -37,7 +35,7 @@ super()
           <NavbarBrand href="/">Swagger Api {this.props.email}</NavbarBrand>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink onClick={this.redirectToBlog}>Blogs</NavLink>
+                <NavLink href={'/blog'}>Blogs</NavLink>
               </NavItem>
 
               <NavItem>
@@ -47,8 +45,8 @@ super()
                 <NavLink>Tech Companies</NavLink>
               </NavItem>
 
-              <NavItem onClick={<Redirect to="/blog" />}>
-                <NavLink>Get Profiles</NavLink>
+              <NavItem>
+                <NavLink onClick={this.props.getPagination}>Get Profiles</NavLink>
               </NavItem>
 
               <NavItem />
