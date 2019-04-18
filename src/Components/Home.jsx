@@ -1,7 +1,7 @@
 import React from "react";
 import * as userService from "../services/userServices";
-import * as peopleService from "../services/peopleService"
-import PeopleCard from "./PeopleCard";
+import * as peopleService from "../services/peopleService";
+import PeopleCard from "./PeopleCard2";
 import Pagination from "./Pagination";
 import NavBar from "./NavBar";
 import ProfileDisplay from "./Profile";
@@ -28,12 +28,16 @@ export default class Home extends React.Component {
       isUpdated: false,
       searchTerm: "",
       alert: false,
-      showCounter:false
+      showCounter: false
     };
   }
 
   componentDidMount() {
-    this.currentUser()
+    //this.currentUser();
+    userService
+    .currentUser()
+    .then(this.currentUserSuccess)
+    .catch(this.currentUserError)
   }
 
   currentUser = () => {
@@ -44,7 +48,6 @@ export default class Home extends React.Component {
   };
 
   currentUserSuccess = res => {
-    console.log(res.item.actualUserId);
     this.setState({ id: res.item.actualUserId });
     this.currentUserId(this.state.id);
   };
@@ -76,12 +79,12 @@ export default class Home extends React.Component {
 
   onPaginationSuccess = res => {
     this.setState({
-     profiles: res.item.pagedItems,
-     totalPages: res.item.totalPages,
-     hasNext: res.item.hasNextPage,
-     hasPrevious: res.item.hasPreviousPage,
-     pageIndex: res.item.pageIndex,
-     showCounter:true
+      profiles: res.item.pagedItems,
+      totalPages: res.item.totalPages,
+      hasNext: res.item.hasNextPage,
+      hasPrevious: res.item.hasPreviousPage,
+      pageIndex: res.item.pageIndex,
+      showCounter: true
     });
   };
 
@@ -100,7 +103,10 @@ export default class Home extends React.Component {
       .catch(this.logoutError);
   };
 
-  logoutSuccess = res => console.log(res);
+  logoutSuccess = res =>{
+    console.log(res);
+     } 
+
   logoutError = error => console.log(error);
 
   toggle() {
@@ -126,26 +132,49 @@ export default class Home extends React.Component {
     return this.state.currentPage;
   };
 
-  getProfileById = id => {
+ // getProfileById = id => {
     //userService
-    peopleService
-      .getProfileById(id)
-      .then(this.getProfileByIdSuccess)
-      .catch(this.getProfileByIdError);
-  };
-  getProfileByIdSuccess = item => {
-    const items = item.item;
-    let profile = { ...items };
-    let primaryImage = { ...profile.primaryImage };
-    profile.primaryImage = primaryImage;
+  //  peopleService
+  //    .getProfileById(id)
+   //   .then(this.getProfileByIdSuccess)
+   //   .catch(this.getProfileByIdError);
+ // };
+ // getProfileByIdSuccess = item => {
+ //   const items = item.item;
+ //   let profile = { ...items };
+ //   let primaryImage = { ...profile.primaryImage };
+ //   profile.primaryImage = primaryImage;
 
-    this.setState((prevState, props) => {
-      return {
-        person: profile,
-        showProfile: true
+  //  this.setState((prevState, props) => {
+  //    return {
+  //      person: profile,
+  //      showProfile: true
+  //    };
+  //  });
+ // };
+
+  getProfileByIdSuccess2 = (profile) =>{
+    console.log("getProfileByIdSuccess2",profile)
+    this.setState((prevState, props)=> {
+      return{
+        person:profile,
+        showProfile:true
       };
     });
+
   };
+  updatePeopleCards=(payload)=>{
+   //let newItems = payload.skills.toString()
+   //let newSkills = newItems.split(",").map(item =>{
+   //   return { "name": item}
+   // })
+    //payload.skills = newSkills
+    const index = this.state.profiles.findIndex((profile)=>profile.id===payload.id),
+    profiles = [...this.state.profiles]
+    profiles[index] = payload;
+    console.log(profiles)
+   this.setState({profiles},()=>this.state.profiles.map(this.mapPeopleCard))
+  }
 
   updateProfileById = (id, payload) => {
     //userService
@@ -155,10 +184,10 @@ export default class Home extends React.Component {
       .catch(this.updateProfileError);
   };
 
-  updateProfileSuccess = results => {
-    this.getPagination(this.state.currentPage, this.state.pageSize);
-    this.setState({ showProfile: false });
-  };
+  updateProfileSuccess = ({ res, payload }) => {
+  //  this.getPagination(this.state.currentPage, this.state.pageSize);
+    this.setState({ showProfile: false },()=>this.updatePeopleCards(payload));
+     };
 
   updateProfileError = error => {
     console.log(error);
@@ -167,8 +196,9 @@ export default class Home extends React.Component {
   getProfileByIdError = results => console.log(results);
 
   submitUpdateForm = value => {
-    var skill = value.skills.split(",");
-    value.skills = skill;
+    console.log("submitUpdateForm",value);
+    //let skill = value.skills.split(",");
+    //value.skills = skill;
     this.updateProfileById(value.id, value);
   };
 
@@ -184,7 +214,7 @@ export default class Home extends React.Component {
     console.log(res.item.pagedItems);
   };
   searchByInputError = error => {
-    this.setState({ profiles:[], alert: true });
+    this.setState({ profiles: [], alert: true });
   };
   handleSearchChange = search => {
     this.setState({ searchTerm: search });
@@ -194,35 +224,42 @@ export default class Home extends React.Component {
     this.setState({ alert: false });
   };
 
-  mapPeopleCard = (profile) =>(
+  getProfileById = (blog)=>{
+    console.log(blog)
+  }
+
+  mapPeopleCard = (profile, index) => (
     <PeopleCard
-    key={profile.id}
-    image={
-      !(profile.primaryImage === null)
-        ? profile.primaryImage.imageUrl
-        : ''
-    }
+     key={index}
+      image={
+        !(profile.primaryImage === null) ? profile.primaryImage.imageUrl || profile.primaryImage : ""
+      }
+      people={profile}
+      index={index}
+      getProfileById={this.getProfileByIdSuccess2}
+    />
+  );
 
-    people={profile}
-    getProfileById={this.getProfileById}
-  />
-  )
-
-    //Rendering For Page/////
+  //Rendering For Page/////
 
   render() {
     const currentPage = this.state.currentPage;
     if (this.state.showProfile) {
       return (
-        
         <ProfileDisplay
           person={this.state.person}
           update={this.updateProfileById}
           submitUpdateForm={this.submitUpdateForm}
         />
-      );
+      ); 
     } else {
-      var pageCounter = <div>{this.state.hasNext ? `Page ${currentPage + 1} of ${this.state.totalPages}` : `End Of Record` }</div>
+      var pageCounter = (
+        <div>
+          {this.state.hasNext
+            ? `Page ${currentPage + 1} of ${this.state.totalPages}`
+            : `End Of Record`}
+        </div>
+      );
       var peopleList = this.state.profiles.map(this.mapPeopleCard);
     }
     return (
@@ -247,11 +284,15 @@ export default class Home extends React.Component {
         <h5>
           {" "}
           Welcome {this.state.firstName} {this.state.lastName}{" "}
-          {(this.state.showCounter)?pageCounter:''}
+          {this.state.showCounter ? pageCounter : ""}
         </h5>
         {peopleList}
-        <AlertResults alert={this.state.alert} onDismiss={this.onAlertDismiss} />
+        <AlertResults
+          alert={this.state.alert}
+          onDismiss={this.onAlertDismiss}
+        />
       </div>
     );
   }
 }
+
