@@ -7,6 +7,7 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPenSquare } from '@fortawesome/free-solid-svg-icons'
 import Blog from './Components/Blog'
+import ProfileDisplay from './Components/Profile';
 library.add(faPenSquare)
 class App extends Component {
   render() {
@@ -19,6 +20,7 @@ class App extends Component {
         <Route path ='/registration'component={RegistrationForm} />
         <Route path='/home' component={Home} />
         <Route path = '/blog' component={Blog} /> 
+        <Route path='/profile/:id' component = {ProfileDisplay} />
         </Switch>
         </div>
     </Router>

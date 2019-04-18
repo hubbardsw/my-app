@@ -5,7 +5,8 @@ const getPagination = (pageNumber,pageSize) => {
 
     const config = {
         method: "GET",
-        url: `http://sabiobootcampapi.azurewebsites.net/api/people/${pageNumber}/${pageSize}`,
+        //url: `http://sabiobootcampapi.azurewebsites.net/api/people/${pageNumber}/${pageSize}`,
+        url: `https://localhost:50001/api/people/${pageNumber}/${pageSize}`,
         withCredentials: true,
         crossdomain: true,
         headers: {
@@ -39,17 +40,18 @@ const updateProfileById = (id, payload) =>{
 
     const config = {
         method: "PUT",
-        url: `http://sabiobootcampapi.azurewebsites.net/api/people/${id}`,
+        //url: `http://sabiobootcampapi.azurewebsites.net/api/people/${id}`,
+        url: `https://localhost:50001/api/people/${id}`,
         data:payload,
         withCredentials: true,
         crossdomain: true,
         headers: {
             "Content-Type": "application/json"
         }
-    };
+    }; 
  
     return axios(config)
-        .then(globalHelper.onGlobalSuccess)
+        .then((res)=>{ return {res,payload} })
         .catch(globalHelper.onGlobalError)
  }
 
@@ -69,9 +71,29 @@ const updateProfileById = (id, payload) =>{
         .then(globalHelper.onGlobalSuccess)
         .catch(globalHelper.onGlobalError)
  }
+
+ const deleteSelectedProfile =(id,payload) =>{
+    const config = {
+        method: "DELETE",
+        url: `https://localhost:50001/api/people/${id}`,
+        withCredentials: true,
+        crossdomain: true,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
+ 
+    return axios(config)
+        .then(globalHelper.onGlobalSuccess)
+        .catch(globalHelper.onGlobalError)
+ }
+ 
+
  export {
     getPagination,
     getProfileById,
     updateProfileById,
-    searchByInput
-}
+    searchByInput,
+    deleteSelectedProfile
+ }
+ 
