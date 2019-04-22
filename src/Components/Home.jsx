@@ -1,11 +1,13 @@
 import React from "react";
 import * as userService from "../services/userServices";
-import * as peopleService from "../services/peopleService"
-import PeopleCard from "./PeopleCard";
+import * as peopleService from "../services/peopleService";
+import PeopleCard from "./PeopleCard2";
 import Pagination from "./Pagination";
 import NavBar from "./NavBar";
 import ProfileDisplay from "./Profile";
 import AlertResults from "./Alert";
+import ProfileForm from "./ProfileForm";
+import DeleteProfileCard from "./Delete";
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -16,6 +18,16 @@ export default class Home extends React.Component {
       firstName: "",
       lastName: "",
       email: "",
+      profileForm: {
+        title: "",
+        bio: "",
+        summary: "",
+        headline: "",
+        slug: "",
+        statusId: "",
+        skills: "",
+        primaryImage: ""
+      },
       profiles: [],
       totalPages: null,
       pageSize: 6,
@@ -28,13 +40,20 @@ export default class Home extends React.Component {
       isUpdated: false,
       searchTerm: "",
       alert: false,
-      showCounter:false
+      showCounter: false,
+      showProfileForm: false
     };
   }
 
   componentDidMount() {
-    this.currentUser()
+    //this.currentUser();
+    userService
+      .currentUser()
+      .then(this.currentUserSuccess)
+      .catch(this.currentUserError);
   }
+
+  showNewsSuccess = res => console.log(res);
 
   currentUser = () => {
     userService
@@ -44,7 +63,6 @@ export default class Home extends React.Component {
   };
 
   currentUserSuccess = res => {
-    console.log(res.item.actualUserId);
     this.setState({ id: res.item.actualUserId });
     this.currentUserId(this.state.id);
   };
@@ -76,12 +94,12 @@ export default class Home extends React.Component {
 
   onPaginationSuccess = res => {
     this.setState({
-     profiles: res.item.pagedItems,
-     totalPages: res.item.totalPages,
-     hasNext: res.item.hasNextPage,
-     hasPrevious: res.item.hasPreviousPage,
-     pageIndex: res.item.pageIndex,
-     showCounter:true
+      profiles: res.item.pagedItems,
+      totalPages: res.item.totalPages,
+      hasNext: res.item.hasNextPage,
+      hasPrevious: res.item.hasPreviousPage,
+      pageIndex: res.item.pageIndex,
+      showCounter: true
     });
   };
 
@@ -100,10 +118,13 @@ export default class Home extends React.Component {
       .catch(this.logoutError);
   };
 
-  logoutSuccess = res => console.log(res);
+  logoutSuccess = res => {
+    console.log(res);
+  };
+
   logoutError = error => console.log(error);
 
-  toggle() {
+  toggle() { 
     this.setState({
       isOpen: !this.state.isOpen
     });
@@ -126,25 +147,24 @@ export default class Home extends React.Component {
     return this.state.currentPage;
   };
 
-  getProfileById = id => {
-    //userService
-    peopleService
-      .getProfileById(id)
-      .then(this.getProfileByIdSuccess)
-      .catch(this.getProfileByIdError);
-  };
-  getProfileByIdSuccess = item => {
-    const items = item.item;
-    let profile = { ...items };
-    let primaryImage = { ...profile.primaryImage };
-    profile.primaryImage = primaryImage;
-
+  getProfileByIdSuccess2 = profile => {
     this.setState((prevState, props) => {
       return {
         person: profile,
         showProfile: true
       };
     });
+  };
+  updatePeopleCards = payload => {
+    const index = this.state.profiles.findIndex(
+        profile => profile.id === payload.id
+      ),
+      profiles = [...this.state.profiles];
+    profiles[index] = payload;
+    console.log(profiles);
+    this.setState({ profiles }, () =>
+      this.state.profiles.map(this.mapPeopleCard)
+    );
   };
 
   updateProfileById = (id, payload) => {
@@ -155,9 +175,11 @@ export default class Home extends React.Component {
       .catch(this.updateProfileError);
   };
 
-  updateProfileSuccess = results => {
-    this.getPagination(this.state.currentPage, this.state.pageSize);
-    this.setState({ showProfile: false });
+  updateProfileSuccess = ({ res, payload }) => {
+    //  this.getPagination(this.state.currentPage, this.state.pageSize);
+    this.setState({ showProfile: false }, () =>
+      this.updatePeopleCards(payload)
+    );
   };
 
   updateProfileError = error => {
@@ -167,10 +189,39 @@ export default class Home extends React.Component {
   getProfileByIdError = results => console.log(results);
 
   submitUpdateForm = value => {
-    var skill = value.skills.split(",");
-    value.skills = skill;
+    console.log("submitUpdateForm", value);
+    //let skill = value.skills.split(",");
+    //value.skills = skill;
     this.updateProfileById(value.id, value);
   };
+
+  onProfileFormChange = event => {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    this.setState({
+      profileForm: {
+        ...this.state.profileForm,
+        [name]: value
+      }
+    });
+  };
+
+  onSubmitNewProfile = payload => {
+    peopleService
+      .submitNewProfile(this.state.profileForm)
+      .then(this.profileSubmitSuccess(payload))
+      .catch(this.submitProfileError);
+  };
+
+  profileSubmitSuccess = res => {
+    console.log(res);
+    //this.setState({ showProfileForm: false});
+    this.updatePeopleCards();
+    this.clearForm();
+  };
+
+  submitProfileError = error => console.log(error);
 
   searchByInput = (search, onSuccess, onError) => {
     peopleService
@@ -184,7 +235,7 @@ export default class Home extends React.Component {
     console.log(res.item.pagedItems);
   };
   searchByInputError = error => {
-    this.setState({ profiles:[], alert: true });
+    this.setState({ profiles: [], alert: true });
   };
   handleSearchChange = search => {
     this.setState({ searchTerm: search });
@@ -194,27 +245,77 @@ export default class Home extends React.Component {
     this.setState({ alert: false });
   };
 
-  mapPeopleCard = (profile) =>(
+  getProfileById = blog => {
+    console.log(blog);
+  };
+
+  deleteSelectedProfile = id => {
+    peopleService
+      .deleteSelectedProfile(id)
+      .then(this.deleteProfileSuccess(id))
+      .catch(this.deleteProfileError);
+  };
+
+  deleteProfileSuccess = (id, res) => {
+    const index = this.state.profiles.findIndex(profile => profile.id === id),
+      profiles = [...this.state.profiles];
+    profiles.splice(index, 1);
+    this.setState({ profiles }, () =>
+      this.state.profiles.map(this.mapPeopleCard)
+    );
+  };
+
+  deleteProfileError = error => console.log(error);
+
+  clearForm = () => {
+    let profileForm = { ...this.state.profileFrom };
+    profileForm = {
+      title: "",
+      bio: "",
+      summary: "",
+      headline: "",
+      slug: "",
+      statusId: "",
+      skills: "",
+      primaryImage: ""
+    };
+    this.setState({ showProfileForm: false, profileForm });
+  };
+
+  showProfilesForm = () => {
+    console.log("click");
+    this.setState({ showProfileForm: true, showProfile: false });
+  };
+
+  mapPeopleCard = (profile, index) => (
     <PeopleCard
-    key={profile.id}
-    image={
-      !(profile.primaryImage === null)
-        ? profile.primaryImage.imageUrl
-        : ''
-    }
+      key={index}
+      image={
+        !(profile.primaryImage === null)
+          ? profile.primaryImage.imageUrl || profile.primaryImage
+          : ""
+      }
+      people={profile}
+      index={index}
+      getProfileById={this.getProfileByIdSuccess2}
+      deleteProfile={this.deleteSelectedProfile}
+    />
+  );
 
-    people={profile}
-    getProfileById={this.getProfileById}
-  />
-  )
-
-    //Rendering For Page/////
+  //Rendering For Page/////
 
   render() {
     const currentPage = this.state.currentPage;
-    if (this.state.showProfile) {
+    if (this.state.showProfileForm) {
       return (
-        
+        <ProfileForm
+          onChange={this.onProfileFormChange}
+          formData={this.state.profileForm}
+          submitProfile={this.onSubmitNewProfile}
+        />
+      );
+    } else if (this.state.showProfile) {
+      return (
         <ProfileDisplay
           person={this.state.person}
           update={this.updateProfileById}
@@ -222,9 +323,17 @@ export default class Home extends React.Component {
         />
       );
     } else {
-      var pageCounter = <div>{this.state.hasNext ? `Page ${currentPage + 1} of ${this.state.totalPages}` : `End Of Record` }</div>
+      var pageCounter = (
+        <div>
+          {this.state.hasNext
+            ? `Page ${currentPage + 1} of ${this.state.totalPages}`
+            : `End Of Record`}
+        </div>
+      );
+
       var peopleList = this.state.profiles.map(this.mapPeopleCard);
     }
+
     return (
       <div>
         <NavBar
@@ -234,6 +343,7 @@ export default class Home extends React.Component {
           handleSearchChange={this.handleSearchChange}
           search={this.state.searchTerm}
           searchByTerms={this.searchByInput}
+          showProfileForm={this.showProfilesForm}
         />
         <div className=" col-md-3 center-text">
           <Pagination
@@ -247,10 +357,14 @@ export default class Home extends React.Component {
         <h5>
           {" "}
           Welcome {this.state.firstName} {this.state.lastName}{" "}
-          {(this.state.showCounter)?pageCounter:''}
+          {this.state.showCounter ? pageCounter : ""}
         </h5>
         {peopleList}
-        <AlertResults alert={this.state.alert} onDismiss={this.onAlertDismiss} />
+        <AlertResults
+          alert={this.state.alert}
+          onDismiss={this.onAlertDismiss}
+        />
+        <DeleteProfileCard />
       </div>
     );
   }

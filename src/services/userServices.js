@@ -1,11 +1,13 @@
 import axios from "axios";
 import * as globalHelper from "../services/serviceHelper";
+import { faFontAwesomeLogoFull, faLevelUpAlt } from "@fortawesome/free-solid-svg-icons";
 
 const logInUser = payload => {
 
     const config = {
         method: "POST",
-        url: `http://sabiobootcampapi.azurewebsites.net/api/users/login`,
+       //url: `http://sabiobootcampapi.azurewebsites.net/api/users/login`,
+        url:`https://localhost:50001/api/users/login`,
         data: payload,
         withCredentials: true,
         crossdomain: true,

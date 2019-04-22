@@ -155,7 +155,7 @@ export default class RegistrationForm extends React.Component {
                       Submit
                     </Button>
                     <p>
-                      Already Have an Account? <Link to="/login">Login</Link>
+                      Already Have an Account? <Link to="/">Login</Link>
                     </p>
                   </FormGroup>
                 </div>

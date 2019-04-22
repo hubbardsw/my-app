@@ -5,7 +5,8 @@ const getRecentBlogs = () => {
 
     const config = {
         method: "GET",
-        url: `http://sabiobootcampapi.azurewebsites.net/api/blogs/feed/1/5`,
+        //url: `http://sabiobootcampapi.azurewebsites.net/api/blogs/feed/1/5`,
+        url:`https://localhost:50001/api/blogs`,
         withCredentials: true,
         crossdomain: true,
         headers: {
@@ -21,3 +22,5 @@ const getRecentBlogs = () => {
         export{
         getRecentBlogs
         }
+
+    

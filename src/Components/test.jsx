@@ -46,6 +46,7 @@ export default class Login extends React.Component {
   userLoginSuccess = data => {
     console.log(data);
     this.setState({ isLoggedIn: true });
+    //Send cookie setter 
   };
 
   userLoginError = error => console.log(error);

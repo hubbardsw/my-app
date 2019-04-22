@@ -3,7 +3,9 @@ import { Button, Card, CardBody, CardTitle } from "reactstrap";
 import "./peopleCard.css";
 
 const PeopleCard = props => {
+  console.log(props);
   const checkImageType = props => {
+    console.log(props);
     if (props.endsWith("g")) {
       return props;
     } else {
@@ -11,9 +13,29 @@ const PeopleCard = props => {
     }
   };
 
-  const editProfile = () => {
-    console.log(props.people.id);
-    props.getProfileById(props.people.id);
+  const editProfile = (e, people) => {
+    console.log(props.people);
+    props.getProfileById(people);
+  };
+
+  //const deleteProfile = (e, people ) =>{
+  //  const payload = {
+  //    id:people.id,
+  //    title:people.title,
+  //    bio:people.bio,
+  //    summary:people.summary,
+  //    headline:people.headline,
+  //    slug:people.slug,
+  // statusId:people.statusId,
+  // skills:people.skills,
+  //   primaryImage:people.primaryImage
+  // }
+  // props.deleteSelectedProfile(people.id, payload)
+
+  //}
+
+  const deleteProfile = (e, people) => {
+    props.deleteProfile(people.id);
   };
 
   return (
@@ -31,16 +53,21 @@ const PeopleCard = props => {
           </div>
           <p>name:{props.people.title}</p>
           <p>slug:{props.people.slug}</p>
+          <p>index:{props.index}</p>
         </CardBody>
         <div>
           <Button
-            onClick={editProfile}
+            onClick={e => editProfile(e, props.people)}
             color="success"
             className="float-left profile-button"
           >
             Edit
           </Button>
-          <Button color="danger" className="float-right profile-button">
+          <Button
+            color="danger"
+            className="float-right profile-button"
+            onClick={e => deleteProfile(e, props.people)}
+          >
             Delete
           </Button>
         </div>

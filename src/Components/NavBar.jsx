@@ -1,8 +1,6 @@
 import React from "react";
-import { Link, Redirect } from "react-router-dom";
+import './navbar.css'
 import {Form, Input, Button, Col, FormGroup, Row} from 'reactstrap'
-
-
 import {
     Navbar,
     NavbarBrand,
@@ -30,14 +28,13 @@ super()
 
     render(){
   const search = this.props.search
-  console.log(search)
-        return (
+         return (
 
-<Navbar color="light" light expand="md">
-          <NavbarBrand href="/">Swagger Api {this.props.email}</NavbarBrand>
+<Navbar color="dark"  dark expand="md" >
+          <NavbarBrand href=''>User: {this.props.email}</NavbarBrand>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink onClick={this.redirectToBlog}>Blogs</NavLink>
+                <NavLink href={'/blog'}>Blogs</NavLink>
               </NavItem>
 
               <NavItem>
@@ -46,28 +43,23 @@ super()
               <NavItem>
                 <NavLink>Tech Companies</NavLink>
               </NavItem>
-
-              <NavItem onClick={<Redirect to="/blog" />}>
-                <NavLink>Get Profiles</NavLink>
-              </NavItem>
-
               <NavItem />
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  Options
+                  Profiles
                 </DropdownToggle>
                 <DropdownMenu right>
-                  <DropdownItem>Option 1</DropdownItem>
-                  <DropdownItem>Option 2</DropdownItem>
+                  <DropdownItem onClick={this.props.showProfileForm}>Create Profile</DropdownItem>
+                  <DropdownItem onClick={this.props.getPagination} >Show Profiles</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem>Reset</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink>
-                  <Link onClick={this.props.logoutUser} to="/login">
+             
+                  <NavLink onClick={this.props.logoutUser} href={'/'} to="/">
                     Logout
-                  </Link>
+                 
                 </NavLink>
               </NavItem>
             </Nav>
